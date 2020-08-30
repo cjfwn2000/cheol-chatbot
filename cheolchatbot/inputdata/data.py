@@ -4,6 +4,25 @@
 
 import tensorflow as tf
 from . import texts
+import pymysql.cursors
+import csv #writeTuplelistTempCsv
+import tempfile #.gettempdir()
+
+def writeTuplelistTempCsv(tuplegen, header):
+    '''tuplegen이 yield하는 tuple을 임시파일에 csv 써내어 그 파일 주소를 return한다.
+    또한 yield된 횟수를 return한다. tuplegen에 내재된 항목 갯수를 알기 위한 사용자를 위함이다.
+    header는 문자열 tuple이며 csv의 맨 위에 쓰여진다. 쓰지 않을 것이면 None이면 된다.'''
+    # MysqlChatDataset에서 MySQL->csv 전략을 수행하기 위한 요량으로 만들었다.
+    fn = tempfile.gettempdir() + '/acxchat_export.csv'
+    i = 0 #how many rows...
+    with open(fn, 'w', newline='') as tempcsv:
+        writer = csv.writer(tempcsv, quoting=csv.QUOTE_NONNUMERIC)
+        if header: writer.writerow(header)
+        for tu in tuplegen:
+            writer.writerow(tu)
+            i += 1
+    return fn, i
+
 
 class MysqlChatDataFetcher:
     '''
