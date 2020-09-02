@@ -5,4 +5,9 @@ dsTrain, _ = joso.toTfDataset()
 print(dsTrain.element_spec)
 print("------------------------------")
 toker = joso.tokenCoder()
-print(toker.dvNumToWord)
+
+keys = list(toker.dvNumToWord.keys())
+for i in range(5):
+    gus = toker.dvNumToWord[keys[i]]
+    print(gus)
+    

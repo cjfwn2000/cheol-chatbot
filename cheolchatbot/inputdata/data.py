@@ -3,7 +3,7 @@
 '''
 
 import tensorflow as tf
-from . import texts
+from .texts import TokenCoder
 import pymysql.cursors
 import csv #writeTuplelistTempCsv
 import tempfile #.gettempdir()
@@ -81,7 +81,7 @@ class MysqlChatDataFetcher:
             for dem, res in ds:
                 yield dem.numpy() #type(dem) == tf.string
                 yield res.numpy()
-        toker = texts.TokenCoder.fromTexts(genSentences(genSentences(dsTrain)))
+        toker = TokenCoder.fromTexts(genSentences(dsTrain))
         
         # ds를 Tensorflow model의 입력으로 삼을 수 있게 만든다.
         # 즉 Token-coding한다. 또한 Shuffling, padding 등등도 행한다.
