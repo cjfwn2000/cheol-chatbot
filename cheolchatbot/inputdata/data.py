@@ -122,6 +122,10 @@ class MysqlChatDataFetcher:
         '''이 데이터를 전처리함에 있어 만들어진 TokenCoder를 return한다.'''
         return self._tokenCoder
 
+    #TODO 데이터셋을 제조하는 과정에서 [staTok], [endTok]을 붙였는데, 이는 self._tokenCoder가 행한 것이 아니므로
+    #외부 사용자가 tokenCoder 하나만으로 이를 처리할 수 없을 것이다. 우리가 따로 처리해줘야 하지 않을까? (개별 public method)
+    #아니면 TokenCoder 클래스가 staTok, endTok까지 Vocabulary로 넣어야 하지 않을까? (근데 이러면 TokenCoder의 슈퍼클래스 위반이지 않나)
+
     
     def vocabSize(self):
         '''토큰 번호의 총 가짓수.'''
