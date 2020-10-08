@@ -31,11 +31,27 @@ class Encoder(tf.keras.Model):
 
 
 class BahdanauAttention(tf.keras.layers.Layer):
+    # https://arxiv.org/pdf/1409.0473.pdf
+
     def __init__(self, units):
-        raise Exception('Not implemented yet.')
+        super(BahdanauAttention, self).__init__()
+        self.W1 = tf.keras.layers.Dense(units)
+        self.W2 = tf.keras.layers.Dense(units)
+        self.V = tf.keras.layers.Dense(1)
 
     def call(self, query, values):
-        raise Exception('Not implemented yet.')
+        # queryWithTimeAxis.shape == (batchSz, 1, hidden size)
+        queryWithTimeAxis = tf.expand_dims(query, 1)
+        score = self.V(tf.nn.tanh(
+            self.W1(queryWithTimeAxis) + self.W2(values)
+        ))
+        # attentionWeights.shape == (batchSz, seqMaxLen, 1)
+        attentionWeights = tf.nn.softmax(score, axis=1)
+        # contextVector.shape (after sum) == (batchSz, hidden size)
+        contextVector = attentionWeights * values
+        contextVector = tf.reduce_sum(contextVector, axis=1)
+
+        return contextVector, attentionWeights
 
     
 class Decoder(tf.keras.Model):
