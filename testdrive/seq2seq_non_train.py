@@ -30,6 +30,12 @@ myEncoder = cseq2.Encoder(
     batchSz=BATCH
 )
 myAttentionLayer = cseq2.BahdanauAttention(ATT_UNITS)
+myDecoder = cseq2.Decoder(
+    vocabSize=VOCABSIZE,
+    embeddingDim=EMB_DIM,
+    decUnits=CODER_UNITS,
+    batchSz=BATCH
+)
 
 
 # Seq2seq의 Encoder는 Hidden state를 다뤄야 한다.
@@ -41,16 +47,24 @@ print(hidden.shape) #(batchSize, encUnits)
 print()
 
 # Test: Encoder
-output, hiddenAfter = myEncoder(sampleInputDem, hidden)
-print("output.shape")
-print(output.shape) #(batchSize, seqLen, encUnits)
+outputFromEnc, hiddenAfter = myEncoder(sampleInputDem, hidden)
+print("outputFromEnc.shape")
+print(outputFromEnc.shape) #(batchSize, seqLen, encUnits)
 print("hiddenAfter.shape")
 print(hiddenAfter.shape) #(batchSize, encUnits)
 print()
 
 # Test: BahdanauAttention
-attResult, attWeights = myAttentionLayer(hiddenAfter, output)
+attResult, attWeights = myAttentionLayer(hiddenAfter, outputFromEnc)
 print("Shape Att result a.k.a. context vector")
-print( attResult.shape ) #(batchSize, attUnits)
+print( attResult.shape ) #(batchSize, hiddenUnits=encUnits)
 print("Shape Att weights")
 print( attWeights.shape ) #(batchSize, seqMaxLen, 1)
+print()
+
+# Test: Decoder
+outputFromDec, _, _ = myDecoder(tf.random.uniform((BATCH, 1)),
+    hiddenAfter, outputFromEnc)
+print("Shape output from dec")
+print(outputFromDec.shape) #(batchSize, vocab)
+print()
