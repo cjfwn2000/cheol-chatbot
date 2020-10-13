@@ -8,9 +8,9 @@ SEQ_LEN_DEM = 17
 SEQ_LEN_RES = 14
 VOCABSIZE = 6700
 sampleInputDem = tf.random.uniform(
-    (BATCH, SEQ_LEN_DEM), minval=0,  maxval=VOCABSIZE+1, dtype=tf.int32)
+    (BATCH, SEQ_LEN_DEM), minval=0,  maxval=VOCABSIZE, dtype=tf.int32)
 sampleInputRes = tf.random.uniform(
-    (BATCH, SEQ_LEN_RES), minval=0,  maxval=VOCABSIZE+1, dtype=tf.int32)
+    (BATCH, SEQ_LEN_RES), minval=0,  maxval=VOCABSIZE, dtype=tf.int32)
 
 print("sampleInputDem.shape")
 print(sampleInputDem.shape)
@@ -63,8 +63,16 @@ print( attWeights.shape ) #(batchSize, seqMaxLen, 1)
 print()
 
 # Test: Decoder
-outputFromDec, _, _ = myDecoder(tf.random.uniform((BATCH, 1)),
-    hiddenAfter, outputFromEnc)
+outputFromDec, _, _ = myDecoder(
+    tf.random.uniform((BATCH, 1)),
+    hiddenAfter, outputFromEnc )
 print("Shape output from dec")
 print(outputFromDec.shape) #(batchSize, vocab)
 print()
+# 주의해야 할 점은
+# Decoder는 Encoder와 달리, 그 입력이 '단타'성이라는 것이다.
+# 쉽게 말해 Decoder에게는 입력을 (BATCH, SEQ_LEN)으로 주어서는 안 되고
+# (BATCH, 1) 로 주어야 한다는 것이다.
+# 그리하여 BATCH개의 각 단어 하나씩 나온 게 결과다. => (BATCH, VOCAB_SIZE)
+# 실제 운용: 희망 문장은 하나 (즉 BATCH=1), <END>가 나올 때까지 Loop.
+
