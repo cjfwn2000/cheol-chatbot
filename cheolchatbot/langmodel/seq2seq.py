@@ -91,19 +91,21 @@ class Decoder(tf.keras.Model):
 
 class Trainer:
     '''
-    주어진 Encoder, Decoder 객체를 역시 주어진 dataset의 입력으로 Train해 주는 도구.
+    주어진 Encoder, Decoder 객체를 역시 주어진 dataset 입력으로 Train해 주는 도구.
     train()을 주목하라.
     Checkpoints saving 기능도 있다.
-    dsInp, dsTarg는 tf.dataset이며, 그 element는 tensor (BATCH_SIZE, SEQ_LEN) 형태이다.
+    dataset은 텐서를 가져올 수 있어야 한다.
     '''
     
-    def __init__(self, encoder, decoder, dsInp, dsTarg, batchSz):
+    def __init__(self, encoder, decoder, dataset):
         self.encoder = encoder
         self.decoder = decoder
-        self.batchSz
+        self.dataset = dataset
 
     @tf.function
     def train_step(inp, targ, encHidden):
+        # TODO
+        batchSz = dataset."대충 Batch크기 알아오는 메소드"
         loss = 0
 
         with tf.GradientTape() as tape:
@@ -111,7 +113,7 @@ class Trainer:
             
             decHidden = encHidden
             decInput = tf.expand_dims(
-                ["대충 <start>의 토큰번호"] * self.batchSz,
+                ["대충 <start>의 토큰번호"] * batchSz,
                 1
             )  #(batchSz, 1)
 

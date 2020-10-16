@@ -26,6 +26,7 @@ def writeTuplelistTempCsv(tuplegen, header):
 
 class MysqlChatDataFetcher:
     '''
+    입력데이터 역할을 하게 될 것이다. (예: Training도구에 이 객체가 매개변수로 들어감)
     이 객체가 제대로 데이터를 가져올 수 있게
     사용자는 mysql계정, 비밀번호, 테이블 이름 등등을 설정해 줄 필요가 있다.
     '''
@@ -34,6 +35,8 @@ class MysqlChatDataFetcher:
         self._mysqlSetting = {'host':host, 'user':user, 'password':password, 'db':dbName}
         self._trainRate = trainRate
         self._batchSize = batchSize
+        self._staTok = 0
+        self._endTok = 0
         
         dsTrain, dsVal, toker = self._fetchChatdata()
         self._datasetTrain = dsTrain
@@ -88,6 +91,8 @@ class MysqlChatDataFetcher:
         bufferSizeToShuffle = 20000
         batchSize = self._batchSize
         staTok, endTok = toker.endNum()+1, toker.endNum()+2
+        self._staTok = staTok  #번호 보관
+        self._endTok = endTok
         def tokencode(dem, res):
             demNew = [staTok] + toker.encode(dem.numpy()) + [endTok]
             resNew = [staTok] + toker.encode(res.numpy()) + [endTok]
@@ -112,11 +117,17 @@ class MysqlChatDataFetcher:
                      
         return dsTrainTK, dsValTK, toker                                 
     
-
     def toTfDataset(self):
         '''Tensorflow 모델 입력으로 쓰이기 위한 Train dataset과 Validation dataset을 return한다.'''
         return self._datasetTrain, self._datasetVal
-    
+
+
+    def getStartTokenNumber(self):
+        '''시퀀스의 시작을 알리는 토큰의 번호를 return한다.'''
+        if self._staTok < 1: raise Exception('Uninitialized yet.')
+        return self._staTok
+
+
 
     def tokenCoder(self):
         '''이 데이터를 전처리함에 있어 만들어진 TokenCoder를 return한다.'''
